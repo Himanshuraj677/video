@@ -1,0 +1,78 @@
+@import "tailwindcss";
+@import "../styles/animations.css";
+
+:root {
+  --background: 250 252 255;
+  --foreground: 14 16 24;
+  --card: 255 255 255;
+  --muted: 238 242 249;
+  --muted-foreground: 94 102 115;
+  --border: 219 226 236;
+  --accent: 13 116 122;
+  --accent-foreground: 230 255 255;
+  --ring: 13 116 122;
+  --gradient-start: 220 240 255;
+  --gradient-end: 255 237 214;
+  --shadow-color: 15 23 42;
+}
+
+.dark {
+  --background: 7 10 18;
+  --foreground: 236 240 247;
+  --card: 15 19 30;
+  --muted: 22 28 40;
+  --muted-foreground: 164 175 194;
+  --border: 31 38 53;
+  --accent: 45 212 191;
+  --accent-foreground: 6 18 22;
+  --ring: 45 212 191;
+  --gradient-start: 16 22 38;
+  --gradient-end: 20 38 48;
+  --shadow-color: 2 6 23;
+}
+
+@theme inline {
+  --color-background: rgb(var(--background));
+  --color-foreground: rgb(var(--foreground));
+  --color-card: rgb(var(--card));
+  --color-muted: rgb(var(--muted));
+  --color-muted-foreground: rgb(var(--muted-foreground));
+  --color-border: rgb(var(--border));
+  --color-accent: rgb(var(--accent));
+  --color-accent-foreground: rgb(var(--accent-foreground));
+  --color-ring: rgb(var(--ring));
+  --font-sans: var(--font-sans);
+  --font-display: var(--font-display);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100%;
+  background: rgb(var(--background));
+  color: rgb(var(--foreground));
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+.text-balance {
+  text-wrap: balance;
+}
+
+.hero-surface {
+  background: linear-gradient(
+      120deg,
+      rgba(var(--gradient-start), 0.7),
+      rgba(var(--gradient-end), 0.7)
+    ),
+    radial-gradient(circle at 20% 20%, rgba(var(--accent), 0.15), transparent 45%),
+    radial-gradient(circle at 80% 10%, rgba(var(--accent), 0.08), transparent 40%);
+}
+
+.glass-card {
+  background: rgba(var(--card), 0.88);
+  border: 1px solid rgba(var(--border), 0.7);
+  box-shadow: 0 20px 60px -40px rgba(var(--shadow-color), 0.6);
+  backdrop-filter: blur(18px);
+}
