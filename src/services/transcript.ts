@@ -1,4 +1,3 @@
-import { ProxyAgent, fetch as undiciFetch } from "undici";
 import { YoutubeTranscript } from "youtube-transcript";
 
 export async function fetchTranscript(videoId: string): Promise<string> {
@@ -19,20 +18,7 @@ export async function fetchTranscript(videoId: string): Promise<string> {
       }
     }
 
-    const proxyUrl = process.env.TRANSCRIPT_PROXY_URL;
-    const proxyAgent = proxyUrl ? new ProxyAgent(proxyUrl) : null;
-    const proxyFetch: typeof fetch | undefined = proxyAgent
-      ? (input, init) =>
-          undiciFetch(input as RequestInfo, {
-            ...(init as RequestInit),
-            dispatcher: proxyAgent,
-          } as RequestInit)
-      : undefined;
-
-    const segments = await YoutubeTranscript.fetchTranscript(
-      videoId,
-      proxyFetch ? { fetch: proxyFetch } : undefined,
-    );
+    const segments = await YoutubeTranscript.fetchTranscript(videoId);
 
     if (!segments?.length) {
       throw new Error("No captions were found for this video.");
