@@ -23,6 +23,7 @@
     "react-markdown": "^9.0.1",
     "remark-gfm": "^4.0.0",
     "tailwind-merge": "^2.5.3",
+    "undici": "^6.19.8",
     "youtube-transcript": "^1.0.6",
     "zod": "^3.23.8"
   },

@@ -7,6 +7,8 @@ import { HeroSection } from "@/components/hero-section";
 import { Navbar } from "@/components/navbar";
 import { NotesCard } from "@/components/notes-card";
 import type { NotesResponse, TranscriptResponse } from "@/types/notes";
+import { fetchTranscriptFromClient } from "@/utils/client-transcript";
+import { extractYouTubeId } from "@/utils/youtube";
 
 const DEMO_URLS = [
   "https://www.youtube.com/watch?v=hfIUstzHs9A",
@@ -27,29 +29,56 @@ export default function HomePage() {
     setErrorMessage(null);
 
     try {
-      const transcriptResponse = await fetch("/api/transcript", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ url }),
-      });
+      const parsedVideoId = extractYouTubeId(url);
 
-      if (!transcriptResponse.ok) {
-        const errorData = (await transcriptResponse.json()) as { error?: string };
-        throw new Error(errorData.error ?? "Unable to fetch transcript.");
+      if (!parsedVideoId) {
+        throw new Error("Enter a valid YouTube URL.");
       }
 
-      const transcriptData =
-        (await transcriptResponse.json()) as TranscriptResponse;
-      setVideoId(transcriptData.videoId);
+      setVideoId(parsedVideoId);
+
+      let transcript = "";
+      let clientError: string | null = null;
+
+      try {
+        transcript = await fetchTranscriptFromClient(parsedVideoId);
+      } catch (error) {
+        clientError =
+          error instanceof Error ? error.message : "Client transcript failed.";
+      }
+
+      if (!transcript) {
+        const transcriptResponse = await fetch("/api/transcript", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ url }),
+        });
+
+        if (!transcriptResponse.ok) {
+          const errorData = (await transcriptResponse.json()) as {
+            error?: string;
+          };
+          throw new Error(
+            errorData.error ??
+              clientError ??
+              "Unable to fetch transcript.",
+          );
+        }
+
+        const transcriptData =
+          (await transcriptResponse.json()) as TranscriptResponse;
+        transcript = transcriptData.transcript;
+        setVideoId(transcriptData.videoId);
+      }
 
       const notesResponse = await fetch("/api/generate-notes", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ transcript: transcriptData.transcript }),
+        body: JSON.stringify({ transcript }),
       });
 
       if (!notesResponse.ok) {
